@@ -273,17 +273,24 @@ open class SCLAlertView: UIViewController {
         public typealias ActionType = () -> Void
         
         var value: TimeInterval
+        var hideViewOnTimeoutReached: Bool
         let action: ActionType
         
         mutating func increaseValue(by: Double) {
             self.value = value + by
         }
         
-        public init(timeoutValue: TimeInterval, timeoutAction: @escaping ActionType) {
+        public init(timeoutValue: TimeInterval, hideViewOnTimeoutReached: Bool, timeoutAction: @escaping ActionType) {
             self.value = timeoutValue
+            self.hideViewOnTimeoutReached = hideViewOnTimeoutReached
             self.action = timeoutAction
         }
         
+        public init(timeoutValue: TimeInterval, timeoutAction: @escaping ActionType) {
+            self.value = timeoutValue
+            self.hideViewOnTimeoutReached = true
+            self.action = timeoutAction
+        }
     }
     
     var appearance: SCLAppearance!
@@ -1014,7 +1021,10 @@ open class SCLAlertView: UIViewController {
     
     @objc open func hideViewTimeout() {
         self.timeout?.action()
-        self.hideView()
+        
+        if let hideTimeoutView = self.timeout?.hideViewOnTimeoutReached, hideTimeoutView {
+            self.hideView()
+        }
     }
     
     func checkCircleIconImage(_ circleIconImage: UIImage?, defaultImage: UIImage) -> UIImage {
