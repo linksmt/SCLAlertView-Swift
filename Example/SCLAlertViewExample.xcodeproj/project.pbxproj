@@ -214,13 +214,13 @@
 			attributes = {
 				LastSwiftMigration = 0700;
 				LastSwiftUpdateCheck = 0700;
-				LastUpgradeCheck = 0940;
+				LastUpgradeCheck = 1000;
 				ORGANIZATIONNAME = "Viktor Radchenko";
 				TargetAttributes = {
 					CEABB2401942AD9700FCB13C = {
 						CreatedOnToolsVersion = 6.0;
 						DevelopmentTeam = 7T7K9M39TB;
-						LastSwiftMigration = 0800;
+						LastSwiftMigration = 1000;
 						ProvisioningStyle = Automatic;
 					};
 					CEABB2541942AD9700FCB13C = {
@@ -446,7 +446,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "SIX-DAYS-LLC.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 4.2;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -467,7 +467,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "SIX-DAYS-LLC.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 4.2;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
