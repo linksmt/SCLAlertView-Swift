@@ -1,3 +1,4 @@
+// swiftlint:disable all
 //
 //  SCLAlertView.swift
 //  SCLAlertView Example
@@ -8,6 +9,7 @@
 
 import Foundation
 import UIKit
+
 fileprivate func < <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
   switch (lhs, rhs) {
   case let (l?, r?):
@@ -78,16 +80,22 @@ open class SCLButton: UIButton {
     var action:(()->Void)!
     var customBackgroundColor:UIColor?
     var customTextColor:UIColor?
+    var progressColor:UIColor?
+    var progress: CGFloat = 1
+    
     var initialTitle:String!
     var showTimeout:ShowTimeoutConfiguration?
+    let progressLayer = CAShapeLayer()
     
     public struct ShowTimeoutConfiguration {
         let prefix: String
         let suffix: String
+        let setTime: ((_ count: String) -> Void)?
         
-        public init(prefix: String = "", suffix: String = "") {
+        public init(prefix: String = "", suffix: String = "", setTime: ((_ count: String) -> Void)? = nil) {
             self.prefix = prefix
             self.suffix = suffix
+            self.setTime = setTime
         }
     }
     
@@ -101,6 +109,40 @@ open class SCLButton: UIButton {
     
     override public init(frame:CGRect) {
         super.init(frame:frame)
+    }
+    
+    public func addProgress () {
+        if let progressColor = progressColor {
+            layer.masksToBounds = true
+            
+            let rectanglePath = UIBezierPath(rect: CGRect(x: 0, y: 0, width: bounds.width, height: bounds.height))
+
+            print (bounds.width)
+            
+            progressLayer.path = rectanglePath.cgPath
+            progressLayer.fillColor = UIColor.clear.cgColor
+            progressLayer.strokeColor = progressColor.cgColor
+            
+            progressLayer.strokeEnd = 0
+            progressLayer.lineWidth = bounds.height*2
+            
+            layer.addSublayer(progressLayer)
+            self.bringSubview(toFront: titleLabel!)
+            self.bringSubview(toFront: imageView!)
+        }
+    }
+    public func setProgress(progress: CGFloat) {
+        
+        let stroke = CABasicAnimation(keyPath: "strokeEnd")
+        stroke.fromValue = self.progress
+        stroke.toValue = progress
+        stroke.duration = 1.0
+        stroke.fillMode = kCAFillModeForwards
+        stroke.isRemovedOnCompletion = false
+        stroke.timingFunction = CAMediaTimingFunction(name: kCAMediaTimingFunctionLinear)
+        self.progressLayer.add(stroke, forKey: nil)
+        
+        self.progress = progress
     }
 }
 
@@ -147,7 +189,7 @@ open class SCLAlertView: UIViewController {
         let kCircleHeight: CGFloat
         let kCircleIconHeight: CGFloat
         let kTitleHeight:CGFloat
-	let kTitleMinimumScaleFactor: CGFloat
+        let kTitleMinimumScaleFactor: CGFloat
         let kWindowWidth: CGFloat
         var kWindowHeight: CGFloat
         var kTextHeight: CGFloat
@@ -159,7 +201,7 @@ open class SCLAlertView: UIViewController {
         let contentViewBorderColor: UIColor
         let titleColor: UIColor
         let subTitleColor: UIColor
-
+        
         let margin: Margin
         /// Margin for SCLAlertView.
         public struct Margin {
@@ -217,7 +259,7 @@ open class SCLAlertView: UIViewController {
         // Activity indicator
         var activityIndicatorStyle: UIActivityIndicatorViewStyle
         
-      public init(kDefaultShadowOpacity: CGFloat = 0.7, kCircleTopPosition: CGFloat = 0.0, kCircleBackgroundTopPosition: CGFloat = 6.0, kCircleHeight: CGFloat = 56.0, kCircleIconHeight: CGFloat = 20.0, kTitleHeight:CGFloat = 25.0,  kWindowWidth: CGFloat = 240.0, kWindowHeight: CGFloat = 178.0, kTextHeight: CGFloat = 90.0, kTextFieldHeight: CGFloat = 30.0, kTextViewdHeight: CGFloat = 80.0, kButtonHeight: CGFloat = 35.0, kTitleFont: UIFont = UIFont.systemFont(ofSize: 20), kTitleMinimumScaleFactor: CGFloat = 1.0, kTextFont: UIFont = UIFont.systemFont(ofSize: 14), kButtonFont: UIFont = UIFont.boldSystemFont(ofSize: 14), showCloseButton: Bool = true, showCircularIcon: Bool = true, shouldAutoDismiss: Bool = true, contentViewCornerRadius: CGFloat = 5.0, fieldCornerRadius: CGFloat = 3.0, buttonCornerRadius: CGFloat = 3.0, hideWhenBackgroundViewIsTapped: Bool = false, circleBackgroundColor: UIColor = UIColor.white, contentViewColor: UIColor = UIColorFromRGB(0xFFFFFF), contentViewBorderColor: UIColor = UIColorFromRGB(0xCCCCCC), titleColor: UIColor = UIColorFromRGB(0x4D4D4D), subTitleColor: UIColor = UIColorFromRGB(0x4D4D4D), margin: Margin = Margin(), dynamicAnimatorActive: Bool = false, disableTapGesture: Bool = false, buttonsLayout: SCLAlertButtonLayout = .vertical, activityIndicatorStyle: UIActivityIndicatorViewStyle = .white) {
+        public init(kDefaultShadowOpacity: CGFloat = 0.7, kCircleTopPosition: CGFloat = 0.0, kCircleBackgroundTopPosition: CGFloat = 6.0, kCircleHeight: CGFloat = 56.0, kCircleIconHeight: CGFloat = 20.0, kTitleHeight:CGFloat = 25.0,  kWindowWidth: CGFloat = 240.0, kWindowHeight: CGFloat = 178.0, kTextHeight: CGFloat = 90.0, kTextFieldHeight: CGFloat = 30.0, kTextViewdHeight: CGFloat = 80.0, kButtonHeight: CGFloat = 35.0, kTitleFont: UIFont = UIFont.systemFont(ofSize: 20), kTitleMinimumScaleFactor: CGFloat = 1.0, kTextFont: UIFont = UIFont.systemFont(ofSize: 14), kButtonFont: UIFont = UIFont.boldSystemFont(ofSize: 14), showCloseButton: Bool = true, showCircularIcon: Bool = true, shouldAutoDismiss: Bool = true, contentViewCornerRadius: CGFloat = 5.0, fieldCornerRadius: CGFloat = 3.0, buttonCornerRadius: CGFloat = 3.0, hideWhenBackgroundViewIsTapped: Bool = false, circleBackgroundColor: UIColor = UIColor.white, contentViewColor: UIColor = UIColorFromRGB(0xFFFFFF), contentViewBorderColor: UIColor = UIColorFromRGB(0xCCCCCC), titleColor: UIColor = UIColorFromRGB(0x4D4D4D), subTitleColor: UIColor = UIColorFromRGB(0x4D4D4D), margin: Margin = Margin(), dynamicAnimatorActive: Bool = false, disableTapGesture: Bool = false, buttonsLayout: SCLAlertButtonLayout = .vertical, activityIndicatorStyle: UIActivityIndicatorViewStyle = .white) {
             
             self.kDefaultShadowOpacity = kDefaultShadowOpacity
             self.kCircleTopPosition = kCircleTopPosition
@@ -236,7 +278,7 @@ open class SCLAlertView: UIViewController {
             self.contentViewBorderColor = contentViewBorderColor
             self.titleColor = titleColor
             self.subTitleColor = subTitleColor
-        
+            
             self.margin = margin
         
             self.kTitleFont = kTitleFont
@@ -272,6 +314,7 @@ open class SCLAlertView: UIViewController {
         
         public typealias ActionType = () -> Void
         
+        var originalValue: TimeInterval
         var value: TimeInterval
         var hideViewOnTimeoutReached: Bool
         let action: ActionType
@@ -281,15 +324,22 @@ open class SCLAlertView: UIViewController {
         }
         
         public init(timeoutValue: TimeInterval, hideViewOnTimeoutReached: Bool, timeoutAction: @escaping ActionType) {
+            self.originalValue = timeoutValue
             self.value = timeoutValue
             self.hideViewOnTimeoutReached = hideViewOnTimeoutReached
             self.action = timeoutAction
         }
         
         public init(timeoutValue: TimeInterval, timeoutAction: @escaping ActionType) {
+            self.originalValue = timeoutValue
             self.value = timeoutValue
             self.hideViewOnTimeoutReached = true
             self.action = timeoutAction
+        }
+        public func calculateProgress() -> Double {
+            
+            print("progress", (1 - value/originalValue))
+            return originalValue > 0 ? (value/originalValue) * 0.4 : 1
         }
     }
     
@@ -496,6 +546,9 @@ open class SCLAlertView: UIViewController {
                 btn.frame = CGRect(x:buttonX, y:y, width:subViewsWidth, height:appearance.kButtonHeight)
                 btn.layer.cornerRadius = appearance.buttonCornerRadius
                 y += appearance.kButtonHeight + buttonMargin
+                if btn.showTimeout != nil {
+                    btn.addProgress()
+                }
             }
         case .horizontal:
           let numberOfButton = CGFloat(buttons.count)
@@ -506,6 +559,9 @@ open class SCLAlertView: UIViewController {
                 btn.layer.cornerRadius = appearance.buttonCornerRadius
                 buttonX += widthEachButton
                 buttonX += buttonsSpace
+                if btn.showTimeout != nil {
+                    btn.addProgress()
+                }
             }
         }
     }
@@ -567,8 +623,8 @@ open class SCLAlertView: UIViewController {
     }
     
     @discardableResult
-    open func addButton(_ title:String, backgroundColor:UIColor? = nil, textColor:UIColor? = nil, showTimeout:SCLButton.ShowTimeoutConfiguration? = nil, action:@escaping ()->Void)->SCLButton {
-        let btn = addButton(title, backgroundColor: backgroundColor, textColor: textColor, showTimeout: showTimeout)
+    open func addButton(_ title:String, backgroundColor:UIColor? = nil, textColor:UIColor? = nil, progressColor: UIColor? = nil, showTimeout:SCLButton.ShowTimeoutConfiguration? = nil, action:@escaping ()->Void)->SCLButton {
+        let btn = addButton(title, backgroundColor: backgroundColor, textColor: textColor, progressColor: progressColor, showTimeout: showTimeout)
         btn.actionType = SCLActionType.closure
         btn.action = action
         btn.addTarget(self, action:#selector(SCLAlertView.buttonTapped(_:)), for:.touchUpInside)
@@ -578,8 +634,8 @@ open class SCLAlertView: UIViewController {
     }
     
     @discardableResult
-    open func addButton(_ title:String, backgroundColor:UIColor? = nil, textColor:UIColor? = nil, showTimeout:SCLButton.ShowTimeoutConfiguration? = nil, target:AnyObject, selector:Selector)->SCLButton {
-        let btn = addButton(title, backgroundColor: backgroundColor, textColor: textColor, showTimeout: showTimeout)
+    open func addButton(_ title:String, backgroundColor:UIColor? = nil, textColor:UIColor? = nil, progressColor: UIColor? = nil, showTimeout:SCLButton.ShowTimeoutConfiguration? = nil, target:AnyObject, selector:Selector)->SCLButton {
+        let btn = addButton(title, backgroundColor: backgroundColor, textColor: textColor, progressColor: progressColor, showTimeout: showTimeout)
         btn.actionType = SCLActionType.selector
         btn.target = target
         btn.selector = selector
@@ -590,7 +646,7 @@ open class SCLAlertView: UIViewController {
     }
     
     @discardableResult
-    fileprivate func addButton(_ title:String, backgroundColor:UIColor? = nil, textColor:UIColor? = nil, showTimeout:SCLButton.ShowTimeoutConfiguration? = nil)->SCLButton {
+    fileprivate func addButton(_ title:String, backgroundColor:UIColor? = nil, textColor:UIColor? = nil, progressColor: UIColor? = nil, showTimeout:SCLButton.ShowTimeoutConfiguration? = nil)->SCLButton {
         // Update view height
         appearance.setkWindowHeight(appearance.kWindowHeight + appearance.kButtonHeight)
         
@@ -601,6 +657,7 @@ open class SCLAlertView: UIViewController {
         btn.titleLabel?.font = appearance.kButtonFont
         btn.customBackgroundColor = backgroundColor
         btn.customTextColor = textColor
+        btn.progressColor = progressColor
         btn.initialTitle = title
         btn.showTimeout = showTimeout
         contentView.addSubview(btn)
@@ -983,11 +1040,20 @@ open class SCLAlertView: UIViewController {
             }
 
             let timeoutStr: String = showTimeout.prefix + String(Int(timeout.value)) + showTimeout.suffix
-            let txt = String(btn.initialTitle) + " " + timeoutStr
+            let txt: String?
+            if showTimeout.setTime != nil {
+                showTimeout.setTime!(timeoutStr)
+                txt = String(btn.initialTitle)
+            } else {
+                txt = String(btn.initialTitle) + " " + timeoutStr
+            }
             btn.setTitle(txt, for: UIControlState())
-            
+            btn.setProgress(progress: CGFloat(timeout.calculateProgress()))
         }
 
+        if self.timeout?.value < 0 {
+            self.showTimeoutTimer?.invalidate()
+        }
     }
     
     // Close SCLAlertView
@@ -1390,3 +1456,4 @@ extension SCLAlertView {
     return appearance.kWindowWidth - 2 * appearance.margin.horizontal
   }
 }
+// swiftlint:enable all
